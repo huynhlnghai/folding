@@ -165,7 +165,7 @@ def run_cmd_commands(
     commands: List[str], suppress_cmd_output: bool = True, verbose: bool = False
 ):
     for cmd in tqdm.tqdm(commands):
-        bt.logging.debug(f"Running command: {cmd}")
+        bt.logging.info(f"Running command: {cmd}")
 
         try:
             result = subprocess.run(
