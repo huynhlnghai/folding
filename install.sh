@@ -27,17 +27,17 @@ else
 fi
 
 # Download and unpack GROMACS
-wget ftp://ftp.gromacs.org/gromacs/gromacs-2024.1.tar.gz
-tar xfz gromacs-2024.1.tar.gz
-cd gromacs-2024.1
+wget ftp://ftp.gromacs.org/gromacs/gromacs-2024.2.tar.gz
+tar xfz gromacs-2024.2.tar.gz
+cd gromacs-2024.2
 mkdir build
 cd build
 
 # Configure GROMACS with or without CUDA support based on availability
 if [ "$CUDA_AVAILABLE" = true ]; then
-    cmake .. -DGMX_BUILD_OWN_FFTW=ON -DREGRESSIONTEST_DOWNLOAD=ON -DGMX_GPU=CUDA -DCUDA_TOOLKIT_ROOT_DIR=/usr/local/cuda
+    cmake .. -DGMX_BUILD_OWN_FFTW=ON -DREGRESSIONTEST_DOWNLOAD=ON -march=skylake-avx512 -DGMX_GPU=CUDA -DCUDA_TOOLKIT_ROOT_DIR=/usr/local/cuda
 else
-    cmake .. -DGMX_BUILD_OWN_FFTW=ON -DREGRESSIONTEST_DOWNLOAD=ON
+    cmake .. -DGMX_BUILD_OWN_FFTW=ON -DREGRESSIONTEST_DOWNLOAD=ON -march=skylake-avx512
 fi
 
 make -j$NUM_PHYSICAL_CORES
