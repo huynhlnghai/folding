@@ -81,10 +81,10 @@ class BaseMinerNeuron(BaseNeuron):
         bt.logging.info(f"Received ping request from {synapse.dendrite.hotkey[:8]}")
 
         synapse.available_compute = self.max_workers - len(self.simulations)
+        synapse.can_serve = True
 
         # TODO: add more conditions.
         if synapse.available_compute > 0:
-            synapse.can_serve = True
             bt.logging.success("Telling validator you can serve ✅")
         return synapse
 
