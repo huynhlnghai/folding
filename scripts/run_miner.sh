@@ -10,4 +10,6 @@ python3 ./neurons/miner.py \
     --wallet.name <your_coldkey> \
     --wallet.hotkey <your_hotkey> \
     --neuron.max_workers <number of processes to run on your machine> \
+    --wandb.off true \
+    --neuron.device gpu \
     --axon.port <your_port>

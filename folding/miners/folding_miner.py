@@ -199,13 +199,14 @@ class FoldingMiner(BaseMinerNeuron):
         return event
 
     def configure_commands(self, mdrun_args: str) -> Dict[str, List[str]]:
+        gpu_args = "-nb gpu -pme gpu -bonded gpu -update gpu"  # GPU-specific arguments
         commands = [
             "gmx grompp -f nvt.mdp -c em.gro -r em.gro -p topol.top -o nvt.tpr",  # Temperature equilibration
-            "gmx mdrun -deffnm nvt " + mdrun_args,
+            "gmx mdrun -deffnm nvt " + mdrun_args + " " + gpu_args,
             "gmx grompp -f npt.mdp -c nvt.gro -r nvt.gro -t nvt.cpt -p topol.top -o npt.tpr",  # Pressure equilibration
-            "gmx mdrun -deffnm npt " + mdrun_args,
+            "gmx mdrun -deffnm npt " + mdrun_args + " " + gpu_args,
             f"gmx grompp -f md.mdp -c npt.gro -t npt.cpt -p topol.top -o md_0_1.tpr",  # Production run
-            f"gmx mdrun -deffnm md_0_1 " + mdrun_args,
+            f"gmx mdrun -deffnm md_0_1 " + mdrun_args + " " + gpu_args,
             f"echo '1\n1\n' | gmx trjconv -s md_0_1.tpr -f md_0_1.xtc -o md_0_1_center.xtc -center -pbc mol",
         ]
 
@@ -448,6 +449,7 @@ class SimulationManager:
             suppress_cmd_output (bool, optional): Defaults to True.
             mock (bool, optional): mock for debugging. Defaults to False.
         """
+        _start = time.time()
         bt.logging.info(
             f"Running simulation for protein: {self.pdb_id} with files {md_inputs.keys()}"
         )
@@ -479,7 +481,8 @@ class SimulationManager:
                         os.path.join(self.output_dir, f"{state}.{ext}")
                     )
 
-        bt.logging.success(f"✅ Finished simulation for protein: {self.pdb_id} ✅")
+        _smlt_time = time.time() - _start
+        bt.logging.success(f"✅ Finished simulation in {_smlt_time} seconds for protein: {self.pdb_id} ✅")
 
         state = "finished"
         with open(self.state_file_name, "w") as f:
